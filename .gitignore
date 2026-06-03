@@ -40,5 +40,5 @@ yarn-error.*
 /ios
 /android
 
-# generated CSS (built by tailwindcss CLI before dev/build)
-global.compiled.css
+# CSS source only — compiled output is committed so Vercel can use it
+# global.css is the source; global.compiled.css is generated but committed
