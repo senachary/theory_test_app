@@ -1,11 +1,9 @@
-import React from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Platform,
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -52,19 +50,19 @@ export function QuizScreen() {
     return (
       <SafeAreaView className="flex-1 bg-[#f3f2f1]" edges={['top', 'bottom']}>
         <ScrollView contentContainerClassName="pb-10">
-          {/* Result header */}
           <View className={`px-4 py-8 ${passed ? 'bg-[#00703C]' : 'bg-[#D4351C]'}`}>
             <Text className="text-white text-3xl font-bold mb-1">
-              {passed ? 'Pass ✓' : 'Not yet ✗'}
+              {vm.timedOut ? 'Time up ⏱' : passed ? 'Pass ✓' : 'Not yet ✗'}
             </Text>
             <Text className="text-white text-base opacity-90">
-              {passed
-                ? 'Well done! You met the pass mark.'
-                : 'Keep practising — you\'ll get there.'}
+              {vm.timedOut
+                ? 'You ran out of time.'
+                : passed
+                  ? 'Well done! You met the pass mark.'
+                  : 'Keep practising — you\'ll get there.'}
             </Text>
           </View>
 
-          {/* Score card */}
           <View className="mx-4 mt-4 bg-white border border-[#b1b4b6] rounded-sm p-6">
             <View className="flex-row justify-around mb-6">
               <View className="items-center">
@@ -79,12 +77,12 @@ export function QuizScreen() {
               </View>
               <View className="items-center">
                 <Text className="text-4xl font-bold text-[#0b0c0c]">{formatTime(durationSeconds)}</Text>
-                <Text className="text-sm text-[#505a5f] mt-1">Time</Text>
+                <Text className="text-sm text-[#505a5f] mt-1">Time taken</Text>
               </View>
             </View>
 
             <View className="bg-[#f3f2f1] rounded-sm p-4 mb-2">
-              <Text className="text-sm text-[#505a5f]">DVSA pass mark: 43/50 (86%)</Text>
+              <Text className="text-sm text-[#505a5f]">Pass mark: 86%</Text>
               <View className="h-2 bg-[#b1b4b6] mt-2 rounded-full overflow-hidden">
                 <View
                   className={`h-2 rounded-full ${passed ? 'bg-[#00703C]' : 'bg-[#D4351C]'}`}
@@ -94,7 +92,6 @@ export function QuizScreen() {
             </View>
           </View>
 
-          {/* Actions */}
           <View className="mx-4 mt-4 gap-y-3">
             <TouchableOpacity
               onPress={vm.restart}
@@ -125,6 +122,8 @@ export function QuizScreen() {
 
   const q = vm.currentQuestion!;
   const isFlagged = vm.flaggedIds.has(q.id);
+  const isWarning = vm.remainingSeconds <= 60;
+  const isCritical = vm.remainingSeconds <= 30;
 
   return (
     <SafeAreaView className="flex-1 bg-[#f3f2f1]" edges={['top', 'bottom']}>
@@ -133,7 +132,14 @@ export function QuizScreen() {
         <TouchableOpacity onPress={() => router.back()}>
           <Text className="text-white text-base">✕ Quit</Text>
         </TouchableOpacity>
-        <Text className="text-white font-bold">{formatTime(vm.elapsedSeconds)}</Text>
+
+        {/* Countdown timer */}
+        <View className={`px-3 py-1 rounded-sm ${isCritical ? 'bg-[#D4351C]' : isWarning ? 'bg-[#FFDD00]' : 'bg-transparent'}`}>
+          <Text className={`font-bold text-base tabular-nums ${isCritical ? 'text-white' : isWarning ? 'text-[#0b0c0c]' : 'text-white'}`}>
+            ⏱ {formatTime(vm.remainingSeconds)}
+          </Text>
+        </View>
+
         <TouchableOpacity onPress={() => vm.toggleFlag(q.id)}>
           <Text className="text-[#FFDD00] text-lg">{isFlagged ? '🚩' : '⚑'}</Text>
         </TouchableOpacity>
@@ -155,7 +161,6 @@ export function QuizScreen() {
       <ScrollView className="flex-1 px-4 py-5" contentContainerClassName="pb-6">
         <CategoryBadge category={q.category} />
 
-        {/* Question */}
         <View className="bg-white border border-[#b1b4b6] rounded-sm p-4 mb-4">
           <Text className="text-base font-bold text-[#0b0c0c] leading-7">{q.question}</Text>
           {q.image_url && (
@@ -167,7 +172,6 @@ export function QuizScreen() {
           )}
         </View>
 
-        {/* Answer options */}
         {q.options.map(opt => (
           <AnswerOption
             key={opt.id}
@@ -179,7 +183,6 @@ export function QuizScreen() {
           />
         ))}
 
-        {/* Explanation */}
         {vm.answerState !== 'unanswered' && (
           <View className={`mt-2 p-4 rounded-sm border-l-4 ${
             vm.answerState === 'correct'
@@ -193,7 +196,6 @@ export function QuizScreen() {
           </View>
         )}
 
-        {/* Next button */}
         {vm.answerState !== 'unanswered' && (
           <TouchableOpacity
             onPress={vm.nextQuestion}

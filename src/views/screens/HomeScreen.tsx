@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -5,7 +6,7 @@ import { AppHeader } from '../components/GovHeader';
 import { useProgress } from '../../viewmodels/useProgress';
 import { ALL_CATEGORIES } from '../../models/Question';
 import type { Category } from '../../models/Question';
-import { getTotalByCategory } from '../../services/questionService';
+import { getTotalByCategory, getTimeLimitSeconds } from '../../services/questionService';
 
 const CATEGORY_ICONS: Record<Category | 'Mixed', string> = {
   'Mixed': '🔀',
@@ -25,16 +26,24 @@ const CATEGORY_ICONS: Record<Category | 'Mixed', string> = {
   'Vehicle Loading': '📦',
 };
 
+const COUNT_OPTIONS = [10, 20, 50] as const;
+type CountOption = typeof COUNT_OPTIONS[number];
+
+function formatMinutes(seconds: number): string {
+  return `${Math.round(seconds / 60)} min`;
+}
+
 export function HomeScreen() {
   const router = useRouter();
   const { progress } = useProgress();
+  const [selectedCount, setSelectedCount] = useState<CountOption>(50);
 
   const passRate = progress && progress.totalTests > 0
     ? Math.round((progress.bestScore / 50) * 100)
     : null;
 
   const startQuiz = (category: Category | 'Mixed') => {
-    router.push({ pathname: '/quiz', params: { category, count: '50' } });
+    router.push({ pathname: '/quiz', params: { category, count: String(selectedCount) } });
   };
 
   const totalQuestions = getTotalByCategory('Mixed');
@@ -75,24 +84,50 @@ export function HomeScreen() {
         )}
 
         <View className="px-4 pt-6">
-          {/* Quick start */}
-          <Text className="text-lg font-bold text-[#0b0c0c] mb-1">Quick start</Text>
-          <Text className="text-sm text-[#505a5f] mb-4">
-            50 random questions · pass mark 43/50 (86%)
-          </Text>
 
+          {/* Question count picker */}
+          <Text className="text-lg font-bold text-[#0b0c0c] mb-3">Number of questions</Text>
+          <View className="flex-row gap-x-3 mb-6">
+            {COUNT_OPTIONS.map(n => {
+              const active = selectedCount === n;
+              const time = formatMinutes(getTimeLimitSeconds(n));
+              return (
+                <TouchableOpacity
+                  key={n}
+                  onPress={() => setSelectedCount(n)}
+                  className={`flex-1 py-4 rounded-sm border-2 items-center ${
+                    active
+                      ? 'bg-[#1D70B8] border-[#1D70B8]'
+                      : 'bg-white border-[#b1b4b6]'
+                  }`}
+                  activeOpacity={0.8}
+                >
+                  <Text className={`text-xl font-bold ${active ? 'text-white' : 'text-[#0b0c0c]'}`}>
+                    {n}
+                  </Text>
+                  <Text className={`text-xs mt-1 ${active ? 'text-[#b1d2f0]' : 'text-[#505a5f]'}`}>
+                    {time}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Quick start */}
           <TouchableOpacity
             onPress={() => startQuiz('Mixed')}
-            className="bg-[#00703C] px-6 py-5 mb-6 rounded-sm shadow-sm"
+            className="bg-[#00703C] px-6 py-5 mb-4 rounded-sm shadow-sm"
             activeOpacity={0.85}
           >
             <Text className="text-white text-lg font-bold">🔀  Start Mixed Test</Text>
-            <Text className="text-[#b8dfca] text-sm mt-1">All categories · {totalQuestions} questions</Text>
+            <Text className="text-[#b8dfca] text-sm mt-1">
+              All categories · {selectedCount} questions · {formatMinutes(getTimeLimitSeconds(selectedCount))}
+            </Text>
           </TouchableOpacity>
 
           {/* Flagged review */}
           <TouchableOpacity
-            onPress={() => router.push({ pathname: '/quiz', params: { category: 'Mixed', count: '50', flaggedOnly: 'true' } })}
+            onPress={() => router.push({ pathname: '/quiz', params: { category: 'Mixed', count: String(selectedCount), flaggedOnly: 'true' } })}
             className="bg-[#FFDD00] px-6 py-4 mb-8 rounded-sm shadow-sm"
             activeOpacity={0.85}
           >
@@ -133,7 +168,6 @@ export function HomeScreen() {
             })}
           </View>
 
-          {/* Progress link */}
           <TouchableOpacity
             onPress={() => router.push('/progress')}
             className="mt-8 border-b border-[#1D70B8] self-start"

@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { Question, Category } from '../models/Question';
 import type { TestResult } from '../models/Progress';
-import { getQuestions } from '../services/questionService';
+import { getQuestions, getTimeLimitSeconds } from '../services/questionService';
 import { saveResult, loadFlaggedIds, toggleFlagged } from '../services/storageService';
 
 export type AnswerState = 'unanswered' | 'correct' | 'incorrect';
@@ -13,20 +13,19 @@ export type QuizConfig = {
 };
 
 export type QuizViewModel = {
-  // state
   questions: Question[];
   currentIndex: number;
   selectedAnswer: string | null;
   answerState: AnswerState;
   flaggedIds: Set<string>;
   score: number;
-  elapsedSeconds: number;
+  remainingSeconds: number;
+  totalSeconds: number;
   isComplete: boolean;
+  timedOut: boolean;
   result: TestResult | null;
-  // derived
   currentQuestion: Question | null;
   progress: number;
-  // actions
   selectAnswer: (optionId: string) => void;
   nextQuestion: () => void;
   toggleFlag: (id: string) => Promise<void>;
@@ -34,52 +33,95 @@ export type QuizViewModel = {
 };
 
 export function useQuiz(config: QuizConfig): QuizViewModel {
+  const totalSeconds = getTimeLimitSeconds(config.questionCount);
+
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [answerState, setAnswerState] = useState<AnswerState>('unanswered');
   const [flaggedIds, setFlaggedIds] = useState<Set<string>>(new Set());
   const [score, setScore] = useState(0);
-  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [remainingSeconds, setRemainingSeconds] = useState(totalSeconds);
   const [isComplete, setIsComplete] = useState(false);
+  const [timedOut, setTimedOut] = useState(false);
   const [result, setResult] = useState<TestResult | null>(null);
 
-  const startTime = useRef<number>(Date.now());
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const scoreRef = useRef(0);
+  const currentIndexRef = useRef(0);
+  const questionsRef = useRef<Question[]>([]);
+
+  const finishQuiz = useCallback(async (
+    finalScore: number,
+    total: number,
+    durationSeconds: number,
+    didTimeOut: boolean
+  ) => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    const passed = finalScore / total >= 0.86;
+
+    const testResult: TestResult = {
+      id: `${Date.now()}`,
+      date: new Date().toISOString(),
+      score: finalScore,
+      total,
+      passed,
+      category: config.category,
+      durationSeconds,
+    };
+
+    await saveResult(testResult);
+    setResult(testResult);
+    setTimedOut(didTimeOut);
+    setIsComplete(true);
+  }, [config.category]);
 
   const initialise = useCallback(async () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+
     const flagged = await loadFlaggedIds();
     setFlaggedIds(flagged);
 
     const qs = getQuestions(config.category, config.questionCount, config.flaggedOnly ? flagged : undefined);
+    questionsRef.current = qs;
+    scoreRef.current = 0;
+    currentIndexRef.current = 0;
+
     setQuestions(qs);
     setCurrentIndex(0);
     setSelectedAnswer(null);
     setAnswerState('unanswered');
     setScore(0);
-    setElapsedSeconds(0);
+    setRemainingSeconds(totalSeconds);
     setIsComplete(false);
+    setTimedOut(false);
     setResult(null);
-
-    startTime.current = Date.now();
-  }, [config.category, config.questionCount, config.flaggedOnly]);
+  }, [config.category, config.questionCount, config.flaggedOnly, totalSeconds]);
 
   useEffect(() => {
     initialise();
   }, [initialise]);
 
+  // Countdown timer
   useEffect(() => {
-    if (isComplete) {
-      if (timerRef.current) clearInterval(timerRef.current);
-      return;
-    }
+    if (isComplete || questions.length === 0) return;
+
     timerRef.current = setInterval(() => {
-      setElapsedSeconds(Math.floor((Date.now() - startTime.current) / 1000));
+      setRemainingSeconds(prev => {
+        if (prev <= 1) {
+          // Time's up — finish with current score
+          const elapsed = totalSeconds;
+          finishQuiz(scoreRef.current, questionsRef.current.length, elapsed, true);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isComplete]);
+  }, [isComplete, questions.length, totalSeconds, finishQuiz]);
 
   const selectAnswer = useCallback((optionId: string) => {
     if (answerState !== 'unanswered') return;
@@ -89,38 +131,25 @@ export function useQuiz(config: QuizConfig): QuizViewModel {
     setSelectedAnswer(optionId);
     const correct = optionId === q.correct_answer;
     setAnswerState(correct ? 'correct' : 'incorrect');
-    if (correct) setScore(s => s + 1);
+    if (correct) {
+      scoreRef.current += 1;
+      setScore(s => s + 1);
+    }
   }, [answerState, questions, currentIndex]);
 
   const nextQuestion = useCallback(async () => {
     const nextIdx = currentIndex + 1;
+    currentIndexRef.current = nextIdx;
+
     if (nextIdx >= questions.length) {
-      const duration = Math.floor((Date.now() - startTime.current) / 1000);
-      const finalScore = score + (answerState === 'correct' ? 0 : 0); // already counted in selectAnswer
-      const total = questions.length;
-
-      // DVSA pass mark is 43/50 (86%)
-      const passed = score / total >= 0.86;
-
-      const testResult: TestResult = {
-        id: `${Date.now()}`,
-        date: new Date().toISOString(),
-        score,
-        total,
-        passed,
-        category: config.category,
-        durationSeconds: duration,
-      };
-
-      await saveResult(testResult);
-      setResult(testResult);
-      setIsComplete(true);
+      const elapsed = totalSeconds - remainingSeconds;
+      await finishQuiz(scoreRef.current, questions.length, elapsed, false);
     } else {
       setCurrentIndex(nextIdx);
       setSelectedAnswer(null);
       setAnswerState('unanswered');
     }
-  }, [currentIndex, questions.length, score, answerState, config.category]);
+  }, [currentIndex, questions.length, totalSeconds, remainingSeconds, finishQuiz]);
 
   const toggleFlag = useCallback(async (id: string) => {
     const updated = await toggleFlagged(id);
@@ -138,8 +167,10 @@ export function useQuiz(config: QuizConfig): QuizViewModel {
     answerState,
     flaggedIds,
     score,
-    elapsedSeconds,
+    remainingSeconds,
+    totalSeconds,
     isComplete,
+    timedOut,
     result,
     currentQuestion: questions[currentIndex] ?? null,
     progress: questions.length > 0 ? (currentIndex + 1) / questions.length : 0,
