@@ -1,8 +1,7 @@
-import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { GovHeader } from '../components/GovHeader';
+import { AppHeader } from '../components/GovHeader';
 import { useProgress } from '../../viewmodels/useProgress';
 import { ALL_CATEGORIES } from '../../models/Question';
 
@@ -47,7 +46,7 @@ export function ProgressScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#f3f2f1]" edges={['top']}>
-      <GovHeader title="Your Progress" showBack />
+      <AppHeader title="Your Progress" showBack />
       <ScrollView className="flex-1" contentContainerClassName="pb-10">
 
         {/* Overall stats */}

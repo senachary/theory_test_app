@@ -1,11 +1,11 @@
-import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { GovHeader } from '../components/GovHeader';
+import { AppHeader } from '../components/GovHeader';
 import { useProgress } from '../../viewmodels/useProgress';
 import { ALL_CATEGORIES } from '../../models/Question';
 import type { Category } from '../../models/Question';
+import { getTotalByCategory } from '../../services/questionService';
 
 const CATEGORY_ICONS: Record<Category | 'Mixed', string> = {
   'Mixed': '🔀',
@@ -37,9 +37,11 @@ export function HomeScreen() {
     router.push({ pathname: '/quiz', params: { category, count: '50' } });
   };
 
+  const totalQuestions = getTotalByCategory('Mixed');
+
   return (
     <SafeAreaView className="flex-1 bg-[#f3f2f1]" edges={['top']}>
-      <GovHeader title="UK Driving Theory Test" />
+      <AppHeader title="UK Theory Test" />
 
       <ScrollView className="flex-1" contentContainerClassName="pb-8">
         {/* Hero */}
@@ -48,7 +50,7 @@ export function HomeScreen() {
             Practise your theory test
           </Text>
           <Text className="text-[#b1d2f0] text-base">
-            Official-style practice questions covering all 14 DVSA categories
+            {totalQuestions} questions across all 14 DVSA categories
           </Text>
         </View>
 
@@ -76,7 +78,7 @@ export function HomeScreen() {
           {/* Quick start */}
           <Text className="text-lg font-bold text-[#0b0c0c] mb-1">Quick start</Text>
           <Text className="text-sm text-[#505a5f] mb-4">
-            50 random questions · DVSA pass mark 43/50 (86%)
+            50 random questions · pass mark 43/50 (86%)
           </Text>
 
           <TouchableOpacity
@@ -85,7 +87,7 @@ export function HomeScreen() {
             activeOpacity={0.85}
           >
             <Text className="text-white text-lg font-bold">🔀  Start Mixed Test</Text>
-            <Text className="text-[#b8dfca] text-sm mt-1">All categories · 50 questions</Text>
+            <Text className="text-[#b8dfca] text-sm mt-1">All categories · {totalQuestions} questions</Text>
           </TouchableOpacity>
 
           {/* Flagged review */}
@@ -106,6 +108,7 @@ export function HomeScreen() {
               const pct = stats && stats.attempted > 0
                 ? Math.round((stats.correct / stats.attempted) * 100)
                 : null;
+              const total = getTotalByCategory(cat);
 
               return (
                 <TouchableOpacity
@@ -119,8 +122,9 @@ export function HomeScreen() {
                   <Text className="text-sm font-bold text-[#0b0c0c] leading-5" numberOfLines={2}>
                     {cat}
                   </Text>
+                  <Text className="text-xs text-[#505a5f] mt-1">{total} questions</Text>
                   {pct !== null && (
-                    <Text className={`text-xs mt-2 font-bold ${pct >= 86 ? 'text-[#00703C]' : 'text-[#D4351C]'}`}>
+                    <Text className={`text-xs mt-1 font-bold ${pct >= 86 ? 'text-[#00703C]' : 'text-[#D4351C]'}`}>
                       {pct}% correct
                     </Text>
                   )}
