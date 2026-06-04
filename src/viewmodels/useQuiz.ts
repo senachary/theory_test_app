@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { Question, Category } from '../models/Question';
-import type { TestResult } from '../models/Progress';
+import type { TestResult, AnswerLog } from '../models/Progress';
 import { getQuestions, getTimeLimitSeconds } from '../services/questionService';
 import { saveResult, loadFlaggedIds, toggleFlagged } from '../services/storageService';
 
@@ -50,6 +50,8 @@ export function useQuiz(config: QuizConfig): QuizViewModel {
   const scoreRef = useRef(0);
   const currentIndexRef = useRef(0);
   const questionsRef = useRef<Question[]>([]);
+  // Accumulates one entry per answered question throughout the session
+  const answerLogRef = useRef<AnswerLog[]>([]);
 
   const finishQuiz = useCallback(async (
     finalScore: number,
@@ -70,7 +72,7 @@ export function useQuiz(config: QuizConfig): QuizViewModel {
       durationSeconds,
     };
 
-    await saveResult(testResult);
+    await saveResult(testResult, answerLogRef.current);
     setResult(testResult);
     setTimedOut(didTimeOut);
     setIsComplete(true);
@@ -86,6 +88,7 @@ export function useQuiz(config: QuizConfig): QuizViewModel {
     questionsRef.current = qs;
     scoreRef.current = 0;
     currentIndexRef.current = 0;
+    answerLogRef.current = [];
 
     setQuestions(qs);
     setCurrentIndex(0);
@@ -109,9 +112,7 @@ export function useQuiz(config: QuizConfig): QuizViewModel {
     timerRef.current = setInterval(() => {
       setRemainingSeconds(prev => {
         if (prev <= 1) {
-          // Time's up — finish with current score
-          const elapsed = totalSeconds;
-          finishQuiz(scoreRef.current, questionsRef.current.length, elapsed, true);
+          finishQuiz(scoreRef.current, questionsRef.current.length, totalSeconds, true);
           return 0;
         }
         return prev - 1;
@@ -131,10 +132,18 @@ export function useQuiz(config: QuizConfig): QuizViewModel {
     setSelectedAnswer(optionId);
     const correct = optionId === q.correct_answer;
     setAnswerState(correct ? 'correct' : 'incorrect');
+
     if (correct) {
       scoreRef.current += 1;
       setScore(s => s + 1);
     }
+
+    // Record this answer in the log regardless of test category
+    answerLogRef.current.push({
+      questionId: q.id,
+      category: q.category,
+      correct,
+    });
   }, [answerState, questions, currentIndex]);
 
   const nextQuestion = useCallback(async () => {

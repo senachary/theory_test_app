@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { UserProgress, TestResult, CategoryStats } from '../models/Progress';
+import type { UserProgress, TestResult, CategoryStats, AnswerLog } from '../models/Progress';
 import type { Category } from '../models/Question';
 import { ALL_CATEGORIES } from '../models/Question';
 
@@ -20,7 +20,8 @@ function defaultProgress(): UserProgress {
     totalTests: 0,
     bestScore: 0,
     categoryStats,
-    recentResults: [],
+    recentResults: [] as TestResult[],
+    questionStats: {},
   };
 }
 
@@ -28,23 +29,45 @@ export async function loadProgress(): Promise<UserProgress> {
   try {
     const raw = await AsyncStorage.getItem(KEYS.PROGRESS);
     if (!raw) return defaultProgress();
-    return { ...defaultProgress(), ...JSON.parse(raw) };
+    const saved = JSON.parse(raw);
+    // Merge so new fields (e.g. questionStats) appear even for old saved data
+    return { ...defaultProgress(), ...saved };
   } catch {
     return defaultProgress();
   }
 }
 
-export async function saveResult(result: TestResult): Promise<void> {
+export async function saveResult(
+  result: TestResult,
+  answerLog: AnswerLog[]
+): Promise<void> {
   const progress = await loadProgress();
+  const now = result.date;
 
   progress.totalTests += 1;
   if (result.score > progress.bestScore) progress.bestScore = result.score;
 
-  if (result.category !== 'Mixed') {
-    const stats = progress.categoryStats[result.category];
-    stats.attempted += result.total;
-    stats.correct += result.score;
-    stats.lastAttempted = result.date;
+  // Update category stats for every answered question individually.
+  // This means Mixed tests now correctly feed into category breakdowns.
+  for (const entry of answerLog) {
+    const stats = progress.categoryStats[entry.category];
+    stats.attempted += 1;
+    if (entry.correct) stats.correct += 1;
+    stats.lastAttempted = now;
+  }
+
+  // Update per-question stats
+  for (const entry of answerLog) {
+    const existing = progress.questionStats[entry.questionId] ?? {
+      timesAnswered: 0,
+      timesCorrect: 0,
+      lastAnswered: now,
+    };
+    progress.questionStats[entry.questionId] = {
+      timesAnswered: existing.timesAnswered + 1,
+      timesCorrect: existing.timesCorrect + (entry.correct ? 1 : 0),
+      lastAnswered: now,
+    };
   }
 
   progress.recentResults = [result, ...progress.recentResults].slice(0, 20);
@@ -74,5 +97,6 @@ export async function toggleFlagged(id: string): Promise<Set<string>> {
 }
 
 export async function clearProgress(): Promise<void> {
-  await AsyncStorage.multiRemove([KEYS.PROGRESS, KEYS.FLAGGED]);
+  await AsyncStorage.removeItem(KEYS.PROGRESS);
+  await AsyncStorage.removeItem(KEYS.FLAGGED);
 }
