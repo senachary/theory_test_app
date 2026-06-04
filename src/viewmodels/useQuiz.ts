@@ -143,6 +143,7 @@ export function useQuiz(config: QuizConfig): QuizViewModel {
       questionId: q.id,
       category: q.category,
       correct,
+      selectedOptionId: optionId,
     });
   }, [answerState, questions, currentIndex]);
 

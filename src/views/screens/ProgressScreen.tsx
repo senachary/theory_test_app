@@ -365,22 +365,43 @@ export function ProgressScreen() {
             {progress.recentResults.length === 0 ? (
               <Text className="text-[#505a5f] text-sm text-center mt-8">No tests completed yet</Text>
             ) : (
-              progress.recentResults.map(r => (
-                <View key={r.id} className="bg-white border border-[#b1b4b6] rounded-sm px-4 py-4 mb-3">
-                  <View className="flex-row items-center justify-between">
-                    <View className={`px-2 py-1 rounded-sm ${r.passed ? 'bg-[#e8f5ee]' : 'bg-[#fde8e5]'}`}>
-                      <Text className={`text-xs font-bold ${r.passed ? 'text-[#00703C]' : 'text-[#D4351C]'}`}>
-                        {r.passed ? 'PASS' : 'FAIL'}
+              progress.recentResults.map(r => {
+                const hasSavedTest = !!progress.savedTests?.[r.id];
+                return (
+                  <View key={r.id} className="bg-white border border-[#b1b4b6] rounded-sm px-4 py-4 mb-3">
+                    <View className="flex-row items-center justify-between">
+                      <View className={`px-2 py-1 rounded-sm ${r.passed ? 'bg-[#e8f5ee]' : 'bg-[#fde8e5]'}`}>
+                        <Text className={`text-xs font-bold ${r.passed ? 'text-[#00703C]' : 'text-[#D4351C]'}`}>
+                          {r.passed ? 'PASS' : 'FAIL'}
+                        </Text>
+                      </View>
+                      <Text className="text-base font-bold text-[#0b0c0c]">
+                        {r.score}/{r.total} ({Math.round((r.score / r.total) * 100)}%)
                       </Text>
+                      <Text className="text-sm text-[#505a5f]">{formatDuration(r.durationSeconds)}</Text>
                     </View>
-                    <Text className="text-base font-bold text-[#0b0c0c]">
-                      {r.score}/{r.total} ({Math.round((r.score / r.total) * 100)}%)
-                    </Text>
-                    <Text className="text-sm text-[#505a5f]">{formatDuration(r.durationSeconds)}</Text>
+                    <Text className="text-xs text-[#505a5f] mt-2">{r.category} · {formatDate(r.date)}</Text>
+                    {hasSavedTest && (
+                      <TouchableOpacity
+                        onPress={() => router.push({
+                          pathname: '/review',
+                          params: {
+                            resultId: r.id,
+                            date: r.date,
+                            score: String(r.score),
+                            total: String(r.total),
+                            category: r.category,
+                          },
+                        })}
+                        className="mt-3 self-start bg-[#1D70B8] px-4 py-2 rounded-sm"
+                        activeOpacity={0.85}
+                      >
+                        <Text className="text-white text-xs font-bold">Review answers →</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
-                  <Text className="text-xs text-[#505a5f] mt-2">{r.category} · {formatDate(r.date)}</Text>
-                </View>
-              ))
+                );
+              })
             )}
 
             <TouchableOpacity

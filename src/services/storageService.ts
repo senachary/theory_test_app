@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { UserProgress, TestResult, CategoryStats, AnswerLog } from '../models/Progress';
+import type { UserProgress, TestResult, CategoryStats, AnswerLog, SavedTest } from '../models/Progress';
 import type { Category } from '../models/Question';
 import { ALL_CATEGORIES } from '../models/Question';
 
@@ -7,6 +7,8 @@ const KEYS = {
   PROGRESS: 'user_progress',
   FLAGGED: 'flagged_questions',
 };
+
+const MAX_SAVED_TESTS = 20;
 
 function defaultProgress(): UserProgress {
   const categoryStats = Object.fromEntries(
@@ -22,6 +24,7 @@ function defaultProgress(): UserProgress {
     categoryStats,
     recentResults: [] as TestResult[],
     questionStats: {},
+    savedTests: {},
   };
 }
 
@@ -30,7 +33,6 @@ export async function loadProgress(): Promise<UserProgress> {
     const raw = await AsyncStorage.getItem(KEYS.PROGRESS);
     if (!raw) return defaultProgress();
     const saved = JSON.parse(raw);
-    // Merge so new fields (e.g. questionStats) appear even for old saved data
     return { ...defaultProgress(), ...saved };
   } catch {
     return defaultProgress();
@@ -47,8 +49,7 @@ export async function saveResult(
   progress.totalTests += 1;
   if (result.score > progress.bestScore) progress.bestScore = result.score;
 
-  // Update category stats for every answered question individually.
-  // This means Mixed tests now correctly feed into category breakdowns.
+  // Update category stats per individual question (fixes Mixed test tracking)
   for (const entry of answerLog) {
     const stats = progress.categoryStats[entry.category];
     stats.attempted += 1;
@@ -70,9 +71,25 @@ export async function saveResult(
     };
   }
 
-  progress.recentResults = [result, ...progress.recentResults].slice(0, 20);
+  // Store the full answer log so tests can be reviewed later
+  const savedTest: SavedTest = { resultId: result.id, answerLog };
+  progress.savedTests[result.id] = savedTest;
+
+  // Keep recentResults and savedTests in sync — drop oldest beyond the limit
+  progress.recentResults = [result, ...progress.recentResults].slice(0, MAX_SAVED_TESTS);
+
+  // Prune savedTests to match — remove any ids not in recentResults
+  const keepIds = new Set(progress.recentResults.map(r => r.id));
+  for (const id of Object.keys(progress.savedTests)) {
+    if (!keepIds.has(id)) delete progress.savedTests[id];
+  }
 
   await AsyncStorage.setItem(KEYS.PROGRESS, JSON.stringify(progress));
+}
+
+export async function loadSavedTest(resultId: string): Promise<SavedTest | null> {
+  const progress = await loadProgress();
+  return progress.savedTests[resultId] ?? null;
 }
 
 export async function loadFlaggedIds(): Promise<Set<string>> {

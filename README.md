@@ -10,12 +10,14 @@ A UK driving theory test practice app built with **React Native + Expo + NativeW
 - **Randomised answer order** — options are shuffled on every attempt so the correct answer is never in a predictable position
 - **Question count picker** — choose 10, 20, or 50 questions before each test
 - **Countdown timer** — DVSA-style time allowances (10 min / 20 min / 57 min); turns yellow at ≤60s, red at ≤30s, auto-submits at zero
+- **Test review** — every completed test is saved; revisit any test from the History tab to see every question, your answer, the correct answer, and the explanation — filterable by correct/incorrect
+- **Question-level progress tracking** — see how many times you've answered each question correctly, which questions need work (<60% correct), which are mastered (always right ≥2×), and how many in each category you've never seen
+- **Per-category unseen breakdown** — instantly see which categories have untouched questions and jump straight to practising only the unseen ones
 - **DVSA-style UI** — GOV.UK colour palette (blue, green, red, yellow)
 - **MVVM architecture** — clean separation of Models, ViewModels (hooks), and Views (screens)
 - **Flag system** — bookmark tricky questions mid-quiz and review them in a dedicated flagged session
 - **Instant feedback** — correct answer highlighted in green with an explanation after every answer
 - **Pass/fail indicator** — 86% pass mark (matching the DVSA standard)
-- **Progress tracking** — per-category accuracy bars, last 20 test results, best score — stored locally via AsyncStorage
 - **Web + mobile** — one codebase, runs in Expo Go on your phone and in any browser via Vercel
 
 ---
@@ -45,20 +47,21 @@ A UK driving theory test practice app built with **React Native + Expo + NativeW
 
 ```
 src/
-├── models/          # TypeScript types (Question, Progress)
+├── models/          # TypeScript types (Question, Progress, SavedTest, AnswerLog)
 ├── data/            # Static question bank (questions.ts — 754 questions)
 ├── services/        # questionService (shuffle, filter, time limits)
-│                    # storageService (AsyncStorage persistence)
+│                    # storageService (AsyncStorage — progress, saved tests, flags)
 ├── viewmodels/      # useQuiz, useProgress — all business logic as hooks
 └── views/
     ├── components/  # ProgressBar, AnswerOption, CategoryBadge, AppHeader
-    └── screens/     # HomeScreen, QuizScreen, ProgressScreen
+    └── screens/     # HomeScreen, QuizScreen, ProgressScreen, ReviewScreen
 
 app/                 # expo-router file-based routing
 ├── _layout.tsx
 ├── index.tsx        → HomeScreen
-├── quiz.tsx         → QuizScreen  (params: category, count, flaggedOnly)
-└── progress.tsx     → ProgressScreen
+├── quiz.tsx         → QuizScreen    (params: category, count, flaggedOnly)
+├── progress.tsx     → ProgressScreen
+└── review.tsx       → ReviewScreen  (params: resultId, date, score, total, category)
 ```
 
 ---
@@ -70,6 +73,22 @@ app/                 # expo-router file-based routing
 | 10 | 10 minutes |
 | 20 | 20 minutes |
 | 50 | 57 minutes (official DVSA allowance) |
+
+---
+
+## Progress Tracking
+
+The app stores detailed progress locally via AsyncStorage:
+
+- **Per-category stats** — attempted and correct counts, updated from every test including Mixed
+- **Per-question stats** — `timesAnswered`, `timesCorrect`, `lastAnswered` for every individual question ID
+- **Full test logs** — the complete answer log for the last 20 tests, enabling full review
+- **Unseen tracking** — automatically derived from which question IDs have no record yet
+
+Progress screen has three tabs:
+- **Categories** — accuracy bar per category with a "Practise this category" shortcut
+- **Questions** — never seen (total + per-category breakdown), need work, mastered, and all-answered list sorted worst-first
+- **History** — last 20 tests with score, duration, and a "Review answers" button for each
 
 ---
 
@@ -104,7 +123,7 @@ npm run android
 npm start
 ```
 
-Each script compiles the Tailwind CSS before launching.
+Each script compiles Tailwind CSS before launching (`npm run css` is called automatically).
 
 ### Deploy to Vercel
 
@@ -117,7 +136,7 @@ vercel login
 vercel --prod
 ```
 
-`vercel.json` runs `npm run vercel-build` which compiles Tailwind then runs `expo export --platform web`. The compiled CSS (`global.compiled.css`) is committed to the repo so Vercel has it available at build time.
+`vercel.json` runs `npm run vercel-build` which compiles Tailwind then exports the web build. `global.compiled.css` is committed to the repo so Vercel has it available at build time.
 
 ---
 
