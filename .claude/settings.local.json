@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -A \"Mozilla/5.0\" \"https://wiki.openstreetmap.org/wiki/Category:Road_sign\")"
+    ]
+  }
+}

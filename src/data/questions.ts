@@ -918,6 +918,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'A',
     explanation: 'A white horizontal bar on a circular blue background is the "No Entry" sign. It means you must not enter the road.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/UK_traffic_sign_616.svg',
   },
   {
     id: 'RS002',
@@ -944,6 +945,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A circular sign with a red border displaying a number is a mandatory maximum speed limit that applies to all vehicles unless excepted by another sign.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/UK_traffic_sign_671.svg',
   },
   {
     id: 'RS004',
@@ -957,6 +959,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'Blue circular signs with white arrows are mandatory direction signs — they tell you which way you must go. A left-pointing arrow means you must turn left.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f8/UK_traffic_sign_609_%28left%29.svg',
   },
   {
     id: 'RS005',
@@ -970,6 +973,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'The national speed limit sign (white circle with a diagonal black bar) means the national speed limit now applies. For a car on a single carriageway that is 60 mph; on a dual carriageway or motorway it is 70 mph.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/UK_traffic_sign_671.svg',
   },
   {
     id: 'RS006',
@@ -1009,6 +1013,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'A',
     explanation: 'The no-overtaking sign (circular, red border, two vehicle symbols) is a mandatory prohibition. You must not overtake moving motor vehicles in this zone.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/b9/UK_traffic_sign_632.svg',
   },
   {
     id: 'RS009',
@@ -1022,6 +1027,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'A',
     explanation: 'A triangular warning sign showing a car with skid marks warns of an area prone to slippery conditions — typically ice, loose gravel, or wet leaves.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/UK_traffic_sign_557.svg',
   },
   {
     id: 'RS010',
@@ -1563,6 +1569,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A white diagonal stripe inside a red circle means "No vehicles" — both directions are prohibited. This is different from the "No Entry" sign (horizontal white bar) which only blocks one direction.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/ba/UK_traffic_sign_616.svg',
   },
 
   // ─── ALERTNESS ───────────────────────────────────────────────────────────
@@ -2742,6 +2749,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A blue rectangular sign with a white "P" indicates a public car park or that parking is permitted in this area. Additional signs on the post may indicate any restrictions.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/0/0f/UK_traffic_sign_801.svg',
   },
   {
     id: 'RS015',
@@ -2755,6 +2763,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A red circle with a red "X" inside is the clearway sign — no stopping at any time. This is commonly seen at bus stops and on certain road sections to keep traffic flowing.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/c6/UK_traffic_sign_638.svg',
   },
   {
     id: 'RS016',
@@ -2794,6 +2803,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A bus lane sign indicates a lane reserved for buses (and sometimes cyclists and taxis) during the hours shown on the sign. Driving in a bus lane during restricted hours results in a fixed penalty notice.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/6/6e/UK_traffic_sign_955.svg',
   },
   {
     id: 'RS019',
@@ -2807,6 +2817,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A steam locomotive inside a warning triangle indicates a level crossing with no gates or barriers. These are more dangerous as there is no physical barrier — always look both ways and never cross if a train is approaching.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/c8/UK_traffic_sign_601.1.svg',
   },
   {
     id: 'RS020',
@@ -2846,6 +2857,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A "20 ZONE" sign marks the entry to a 20 mph zone where the limit applies to all roads within the zone. Repeater signs within the zone are not required, unlike a standard 20 mph limit on an individual road.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/UK_traffic_sign_671.svg',
   },
   {
     id: 'RS023',
@@ -2859,6 +2871,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'A',
     explanation: 'A skidding car on a wavy line inside a red triangle warns of a slippery road surface — typically caused by ice, loose gravel, mud, or a surface that becomes slippery when wet. Reduce speed.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/UK_traffic_sign_557.svg',
   },
   {
     id: 'RS024',
@@ -2872,6 +2885,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A blue circle showing a cyclist and pedestrian side by side indicates a shared use path where both cyclists and pedestrians may use the same surface. Cyclists must give way to pedestrians.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/4/4f/UK_traffic_sign_956.svg',
   },
 
   // ─── DOCUMENTS ───────────────────────────────────────────────────────────
@@ -4199,6 +4213,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'This warning sign indicates that a cycle route crosses or joins the road ahead. Watch for cyclists who may cross your path. It is particularly common near off-road cycle tracks that cross minor roads.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/6/6e/UK_traffic_sign_955.svg',
   },
   {
     id: 'RS026',
@@ -4212,6 +4227,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'C',
     explanation: 'The no overtaking sign shows two cars side by side inside a circular red border. It is a mandatory prohibition — you must not overtake any moving motor vehicle until the restriction ends.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/b9/UK_traffic_sign_632.svg',
   },
   {
     id: 'RS027',
@@ -4225,6 +4241,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A blue sign with a white "H" indicates a hospital ahead. This alerts drivers to take care as there may be ambulances turning in and out, slow-moving traffic near the entrance, and pedestrians crossing.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/8/8c/UK_traffic_sign_817.svg',
   },
   {
     id: 'RS028',
@@ -4264,6 +4281,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'C',
     explanation: 'A contraflow cycle lane sign (two arrows in opposite directions with a bicycle) indicates that cyclists may travel in the opposite direction to motor vehicles on a one-way street. Drivers must watch for oncoming cyclists.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/UK_traffic_sign_957.svg',
   },
   {
     id: 'RS031',
@@ -4277,6 +4295,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'A',
     explanation: 'A T-junction sign warns that the road ahead ends at a T-junction — you will need to turn left or right. It is a triangular warning sign showing the layout of the junction.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/0/09/UK_traffic_sign_502.svg',
   },
   {
     id: 'RS032',
@@ -5305,6 +5324,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'A crossroads warning sign shows a vertical and horizontal arrow forming a cross inside a red triangle. It warns of a crossroads junction ahead where you should be alert for traffic from all directions.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/UK_traffic_sign_501.svg',
   },
   {
     id: 'RS034',
@@ -5331,6 +5351,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'On a motorway, the end-of-restriction sign (derestriction sign) means the variable speed limit that was in force has ended. The national speed limit of 70 mph now applies, unless further signs state otherwise.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/c/cd/UK_traffic_sign_671.svg',
   },
   {
     id: 'RS036',
@@ -5357,6 +5378,7 @@ const questions: Question[] = [
     ],
     correct_answer: 'B',
     explanation: 'The slippery road warning sign indicates a road surface that is prone to becoming slippery — often due to ice, wet leaves, diesel spills, or a surface that becomes slick in wet weather. Reduce speed and drive with extra care.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/UK_traffic_sign_557.svg',
   },
   {
     id: 'RS038',
@@ -5983,6 +6005,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'Traffic lights are out of order' }, { id: 'B', text: 'Traffic signals ahead' }, { id: 'C', text: 'Pedestrian crossing ahead' }, { id: 'D', text: 'Level crossing with traffic signals' }],
     correct_answer: 'B',
     explanation: 'A triangular warning sign showing a traffic light indicates traffic signals ahead. This warns drivers to prepare to stop, especially useful where traffic lights may not be immediately visible on approach.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/b/b6/UK_traffic_sign_543.svg',
   },
   {
     id: 'RS043', category: 'Road and Traffic Signs',
@@ -5997,6 +6020,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'A crossroads ahead' }, { id: 'B', text: 'A give way junction ahead — you must be prepared to slow and stop to give way to traffic on the major road' }, { id: 'C', text: 'You are approaching a roundabout' }, { id: 'D', text: 'Pedestrians have priority ahead' }],
     correct_answer: 'B',
     explanation: 'A "GIVE WAY" triangle painted on the road surface warns of a give way junction ahead. Combined with the broken white line across the road, it means you must give way to traffic on the major road.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/1/16/UK_traffic_sign_602.svg',
   },
   {
     id: 'RS045', category: 'Road and Traffic Signs',
@@ -6004,6 +6028,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'Recommended route to the left' }, { id: 'B', text: 'You must turn left — no choice' }, { id: 'C', text: 'Vehicles turning left have priority' }, { id: 'D', text: 'One-way road to the left' }],
     correct_answer: 'B',
     explanation: 'A blue circular sign with a directional arrow is a mandatory direction sign. You must follow the direction shown. A left arrow means you must turn left.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f8/UK_traffic_sign_609_%28left%29.svg',
   },
 
   // ─── DOCUMENTS ───────────────────────────────────────────────────────────
@@ -6444,6 +6469,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'Temporary diversion — follow the route to the left' }, { id: 'B', text: 'A sharp bend to the left ahead — the chevrons emphasise the direction and severity' }, { id: 'C', text: 'Road narrows to the left' }, { id: 'D', text: 'Road works — keep left' }],
     correct_answer: 'B',
     explanation: 'Red-and-white chevron signs (pointed arrows) are placed on sharp bends to emphasise the direction and severity of the curve. They are typically found at the outside of a sharp bend. Slow down significantly before the bend.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/8/88/UK_traffic_sign_511%E2%80%93V1.svg',
   },
   {
     id: 'RS047', category: 'Road and Traffic Signs',
@@ -6451,6 +6477,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'A wildlife reserve — no hunting' }, { id: 'B', text: 'Wild animals may cross the road ahead — slow down and be prepared to stop' }, { id: 'C', text: 'A safari park entrance ahead' }, { id: 'D', text: 'Livestock market nearby' }],
     correct_answer: 'B',
     explanation: 'A wild animals warning sign (red triangle with a deer or similar animal) warns that wild animals — deer, badgers, foxes — frequently cross the road in this area. Be especially vigilant at dawn and dusk when animal movement is highest.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/0/0c/UK_traffic_sign_551.svg',
   },
   {
     id: 'RS048', category: 'Road and Traffic Signs',
@@ -6472,6 +6499,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'Caution — elderly or disabled people may be crossing' }, { id: 'B', text: 'Footpath crosses road ahead' }, { id: 'C', text: 'Slippery road — use extra caution' }, { id: 'D', text: 'School crossing patrol operating' }],
     correct_answer: 'A',
     explanation: 'A triangular warning sign showing a person with a stick (often with two figures) warns that elderly or disabled people frequently cross or use the road in this area. Take special care — they may move slowly and unpredictably.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/9/97/UK_traffic_sign_545.svg',
   },
 
   // ─── DOCUMENTS ───────────────────────────────────────────────────────────
@@ -6969,6 +6997,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'A red circle with a car inside' }, { id: 'B', text: 'A red circle containing a motorcycle and car side by side' }, { id: 'C', text: 'A blue circle with a red diagonal stripe' }, { id: 'D', text: 'A red triangle with a car' }],
     correct_answer: 'B',
     explanation: 'The "no motor vehicles" sign is a red-bordered circle containing a motorcycle and a car side by side. It prohibits all motor vehicles but allows cyclists and pedestrians.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/a/a3/UK_traffic_sign_619.svg',
   },
   {
     id: 'RS053', category: 'Road and Traffic Signs',
@@ -6990,6 +7019,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'Cyclists are advised to use this route' }, { id: 'B', text: 'A mandatory cycle-only path or lane — no pedestrians or motor vehicles' }, { id: 'C', text: 'Cyclists must give way to pedestrians' }, { id: 'D', text: 'A shared path for cyclists and pedestrians' }],
     correct_answer: 'B',
     explanation: 'A blue circle containing only a bicycle symbol is a mandatory cyclists-only route. Pedestrians and motor vehicles must not use it. This is different from a shared-use path (which shows both a cyclist and pedestrian).',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/6/6c/UK_traffic_sign_957.svg',
   },
 
   // ─── DOCUMENTS ───────────────────────────────────────────────────────────
@@ -7233,6 +7263,7 @@ const questions: Question[] = [
     options: [{ id: 'A', text: 'A farm ahead — reduce speed' }, { id: 'B', text: 'Livestock may be crossing or on the road — take care' }, { id: 'C', text: 'An agricultural vehicle crossing' }, { id: 'D', text: 'A cattle grid ahead' }],
     correct_answer: 'B',
     explanation: 'A livestock warning sign means animals may be crossing or in the road ahead. Slow right down and be prepared to stop. A spooked animal can bolt across the road or become paralysed with fear in your path.',
+    image_url: 'https://upload.wikimedia.org/wikipedia/commons/f/f8/UK_traffic_sign_549.svg',
   },
   {
     id: 'RS058', category: 'Road and Traffic Signs',

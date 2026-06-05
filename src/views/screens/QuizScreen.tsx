@@ -4,8 +4,8 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
 } from 'react-native';
+import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useQuiz } from '../../viewmodels/useQuiz';
@@ -166,8 +166,8 @@ export function QuizScreen() {
           {q.image_url && (
             <Image
               source={{ uri: q.image_url }}
-              className="w-full h-48 mt-3 rounded-sm"
-              resizeMode="contain"
+              style={{ width: '100%', height: 192, marginTop: 12, borderRadius: 2 }}
+              contentFit="contain"
             />
           )}
         </View>

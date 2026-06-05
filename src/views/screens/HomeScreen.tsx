@@ -168,9 +168,23 @@ export function HomeScreen() {
             })}
           </View>
 
+          {/* Road signs reference */}
+          <TouchableOpacity
+            onPress={() => router.push('/signs')}
+            className="mt-8 bg-white border border-[#b1b4b6] rounded-sm px-6 py-4 flex-row items-center shadow-sm"
+            activeOpacity={0.85}
+          >
+            <Text className="text-2xl mr-3">🚦</Text>
+            <View className="flex-1">
+              <Text className="text-sm font-bold text-[#0b0c0c]">Road Signs Reference</Text>
+              <Text className="text-xs text-[#505a5f] mt-0.5">Browse & search all UK signs with images</Text>
+            </View>
+            <Text className="text-[#1D70B8] text-base">→</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => router.push('/progress')}
-            className="mt-8 border-b border-[#1D70B8] self-start"
+            className="mt-4 border-b border-[#1D70B8] self-start"
           >
             <Text className="text-[#1D70B8] text-base">View full progress →</Text>
           </TouchableOpacity>
